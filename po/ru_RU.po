@@ -1,0 +1,3 @@
+msgid "IDS_USB_POP_USB_CONNECTION_FAILED"
+msgstr "Сбой подключения через USB"
+

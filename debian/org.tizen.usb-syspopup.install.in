@@ -1,0 +1,3 @@
+@PREFIX@/bin/usb-syspopup
+@PREFIX@/share/locale/*/LC_MESSAGES/usb-syspopup.mo
+@PREFIX@/share/packages/com.samsung.usb-syspopup.xml
