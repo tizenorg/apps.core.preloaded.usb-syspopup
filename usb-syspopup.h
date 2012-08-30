@@ -69,7 +69,8 @@ typedef enum {
 typedef enum {
 	ERROR_POPUP = 0,
 	SELECT_PKG_FOR_ACC_POPUP,
-	REQUEST_PERM_POPUP,
+	REQ_ACC_PERM_POPUP,
+	TEST_POPUP,
 	MAX_NUM_SYSPOPUP_TYPE
 	/* When we need to add other system popup,
 	 * Write here the type of popup */
@@ -85,14 +86,17 @@ typedef enum {
 } ACC_ELEMENT;
 
 typedef enum {
-	LAUNCH_APP = 0,
-	REQUEST_PERMISSION,
-	HAS_PERMISSION,
-	REQ_PERM_NOTI_YES_BTN,
-	REQ_PERM_NOTI_NO_BTN,
-	GET_ACC_INFO,
-	ERROR_POPUP_OK_BTN,
-	MAX_NUM_REQUEST
+	/* General */
+	ERROR_POPUP_OK_BTN = 0,
+	IS_EMUL_BIN,
+
+	/* for Accessory */
+	LAUNCH_APP_FOR_ACC = 20,
+	REQ_ACC_PERMISSION,
+	HAS_ACC_PERMISSION,
+	REQ_ACC_PERM_NOTI_YES_BTN,
+	REQ_ACC_PERM_NOTI_NO_BTN,
+	GET_ACC_INFO
 } REQUEST_TO_USB_MANGER;
 
 typedef struct _usbAccessory {

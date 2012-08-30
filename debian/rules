@@ -110,7 +110,7 @@ binary-arch: build install
 	dh_installman
 	dh_link
 #	dh_strip
-	dh_strip --dbg-package=com.samsung.usb-syspopup-dbg
+	dh_strip --dbg-package=org.tizen.usb-syspopup-dbg
 	dh_compress
 	dh_fixperms
 #	dh_perl

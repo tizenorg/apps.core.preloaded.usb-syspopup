@@ -17,14 +17,14 @@ Build-Depends: debhelper (>= 5),
 		libattr1-dev
 Standards-Version: 3.7.2
 
-Package: com.samsung.usb-syspopup
+Package: org.tizen.usb-syspopup
 Section: devel
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: usb system popup package
 
-Package: com.samsung.usb-syspopup-dbg
+Package: org.tizen.usb-syspopup-dbg
 Section: debug
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, com.samsung.usb-syspopup (= ${Source-Version})
+Depends: ${shlibs:Depends}, ${misc:Depends}, org.tizen.usb-syspopup (= ${Source-Version})
 Description: usb system popup degug package

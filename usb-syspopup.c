@@ -1,7 +1,7 @@
 /*
  * usb-syspopup
  *
- * Copyright (c) 2000 - 2011 Samsung Electronics Co., Ltd All Rights Reserved
+ * Copyright (c) 2000 - 2012 Samsung Electronics Co., Ltd All Rights Reserved
  *
  * Contact: Taeyoung Kim <ty317.kim@samsung.com>
  *
@@ -24,7 +24,6 @@
 #include <Ecore_X.h>
 #include <devman.h>
 #include <heynoti.h>
-
 #include <time.h>
 #include "usb-syspopup.h"
 
@@ -287,7 +286,7 @@ int request_to_usb_server(int request, char *pkgName, char *answer)
 		USB_LOG(USB_LOG_VERBOSE, "FAIL: ipc_socket_client_init(&sock_remote)");
 		return -1;
 	}
-	if(LAUNCH_APP == request) {
+	if(LAUNCH_APP_FOR_ACC == request) {
 		snprintf(str, SOCK_STR_LEN, "%d|%s", request, pkgName);
 	} else {
 		snprintf(str, SOCK_STR_LEN, "%d|", request);
@@ -344,7 +343,7 @@ static void request_perm_popup_yes_response_cb(void *data,
 	evas_object_smart_callback_del(ad->rbtn, "clicked", request_perm_popup_no_response_cb);
 
 	char buf[SOCK_STR_LEN];
-	int ret = request_to_usb_server(REQ_PERM_NOTI_YES_BTN, NULL, buf);
+	int ret = request_to_usb_server(REQ_ACC_PERM_NOTI_YES_BTN, NULL, buf);
 	if (ret < 0) {
 		USB_LOG(USB_LOG_VERBOSE, "FAIL: request_to_usb_server(NOTICE_YES_BTN, NULL, buf)\n");
 		return;
@@ -364,7 +363,7 @@ static void request_perm_popup_no_response_cb(void *data,
 	evas_object_smart_callback_del(ad->rbtn, "clicked", request_perm_popup_no_response_cb);
 
 	char buf[SOCK_STR_LEN];
-	int ret = request_to_usb_server(REQ_PERM_NOTI_NO_BTN, NULL, buf);
+	int ret = request_to_usb_server(REQ_ACC_PERM_NOTI_NO_BTN, NULL, buf);
 	if (ret < 0) {
 		USB_LOG(USB_LOG_VERBOSE, "FAIL: request_to_usb_server(NOTICE_NO_BTN, NULL, buf)\n");
 		return;
@@ -451,7 +450,7 @@ static int send_sel_pkg_to_usb_server(struct appdata *ad)
 	__USB_FUNC_ENTER__ ;
 	int ret = -1;
 	char answer[SOCK_STR_LEN];
-	ret = request_to_usb_server(LAUNCH_APP, ad->selPkg, answer);
+	ret = request_to_usb_server(LAUNCH_APP_FOR_ACC, ad->selPkg, answer);
 	if (0 != ret) {
 		USB_LOG(USB_LOG_VERBOSE, "FAIL: request_to_usb_server(LAUNCH_APP, ad->selPkg, answer)");
 		return -1;
@@ -621,7 +620,7 @@ void load_request_perm_popup(struct appdata *ad)
 	if(ret == 0)
 	{
 		ad->content = dgettext(USB_SYSPOPUP_MESSAGE_DOMAIN,
-						"This app gets Permission to access to the usb Accessory. Continue?");
+						"IDS_COM_POP_ALLOW_APPLICATION_P1SS_TO_ACCESS_USB_ACCESSORY_Q_ABB");
 		USB_LOG(USB_LOG_VERBOSE, "ad->content is (%s)\n", ad->content);
 
 		evas_object_show(ad->win);
@@ -689,7 +688,7 @@ static int __app_reset(bundle *b, void *data)
 		USB_LOG(USB_LOG_VERBOSE, "Select pkg for acc popup is loaded\n");
 		load_select_pkg_for_acc_popup(ad);
 		break;
-	case REQUEST_PERM_POPUP:
+	case REQ_ACC_PERM_POPUP:
 		USB_LOG(USB_LOG_VERBOSE, "Request Permission popup is loaded\n");
 		load_request_perm_popup(ad);
 	default:
