@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<manifest xmlns="http://tizen.org/ns/packages" package="org.tizen.usb-syspopup" version="0.0.1" install-location="internal-only">
+	<label>Usb syspopup</label>
+	<author email="ty317.kim@samsung.com" href="www.samsung.com">Taeyoung Kim</author>
+	<description>USB System Popup Application</description>
+	<ui-application appid="org.tizen.usb-syspopup" exec="/usr/bin/usb-syspopup" nodisplay="true" multiple="false" type="capp" taskmanage="false">
+		<label>Usb syspopup</label>
+		<label xml:lang="en-us">Usb system popup</label>
+		<label xml:lang="nl-nl">Usb-systeem pop-up</label>
+		<label xml:lang="de-de">USB-System popup</label>
+		<label xml:lang="zh-hk">USB系統彈出</label>
+		<label xml:lang="zh-cn">USB系统弹出</label>
+		<label xml:lang="ru-ru">Usb система всплывающих</label>
+		<label xml:lang="zh-tw">USB系統彈出</label>
+		<label xml:lang="ja-jp">USBシステムのポップアップ</label>
+		<label xml:lang="es-es">USB del sistema emergente</label>
+		<label xml:lang="el-gr">Usb σύστημα popup</label>
+		<label xml:lang="it-it">Usb sistema popup</label>
+		<label xml:lang="tr-tr">Usb sistemi açılır</label>
+		<label xml:lang="pt-pt">Usb sistema pop-up</label>
+		<label xml:lang="fr-fr">Usb système contextuel</label>
+		<label xml:lang="ko-kr">USB 시스템 팝업</label>
+	</ui-application>
+</manifest>

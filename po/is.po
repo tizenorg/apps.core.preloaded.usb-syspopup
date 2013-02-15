@@ -1,0 +1,9 @@
+msgid "IDS_USB_POP_USB_CONNECTION_FAILED"
+msgstr "USB-tenging mistókst"
+
+msgid "IDS_COM_HEADER_USB_ACCESSORY"
+msgstr "USB-aukahlutur"
+
+msgid "IDS_COM_POP_ALLOW_APPLICATION_P1SS_TO_ACCESS_USB_ACCESSORY_Q_ABB"
+msgstr "Leyfa forritinu að fá aðgang að USB-aukabúnaðinum?"
+

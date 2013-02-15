@@ -1,0 +1,9 @@
+msgid "IDS_USB_POP_USB_CONNECTION_FAILED"
+msgstr "USB қосылмады"
+
+msgid "IDS_COM_HEADER_USB_ACCESSORY"
+msgstr "USB аксессуары"
+
+msgid "IDS_COM_POP_ALLOW_APPLICATION_P1SS_TO_ACCESS_USB_ACCESSORY_Q_ABB"
+msgstr "бағдарламасына USB аксессуарына кіруге мүмкіндік беру керек пе?"
+

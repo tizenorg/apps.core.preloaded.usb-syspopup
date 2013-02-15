@@ -1,0 +1,9 @@
+msgid "IDS_USB_POP_USB_CONNECTION_FAILED"
+msgstr "Error de conexión USB"
+
+msgid "IDS_COM_HEADER_USB_ACCESSORY"
+msgstr "Accesorio USB"
+
+msgid "IDS_COM_POP_ALLOW_APPLICATION_P1SS_TO_ACCESS_USB_ACCESSORY_Q_ABB"
+msgstr "¿Permitir a la aplicación acceder al accesorio USB?"
+
