@@ -1,0 +1,30 @@
+Source: usb-syspopup
+Section: tools
+Priority: extra
+Maintainer: Taeyoung Kim <ty317.kim@samsung.com> Taesoo Jun <steve.jun@samsung.com>
+Uploaders: Taeyoung Kim <ty317.kim@samsung.com> Taesoo Jun <steve.jun@samsung.com>
+Build-Depends: debhelper (>= 5),
+		libelm-dev,
+		libappcore-efl-dev,
+		libecore-dev,
+		libevas-dev,
+		libheynoti-dev,
+		libslp-setting-dev,
+		libdevman-dev,
+		dlog-dev,
+		syspopup-dev,
+		iniparser-dev,
+		libattr1-dev
+Standards-Version: 3.7.2
+
+Package: org.tizen.usb-syspopup
+Section: devel
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: usb system popup package
+
+Package: org.tizen.usb-syspopup-dbg
+Section: debug
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, org.tizen.usb-syspopup (= ${Source-Version})
+Description: usb system popup degug package

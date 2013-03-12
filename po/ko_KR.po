@@ -1,0 +1,9 @@
+msgid "IDS_USB_POP_USB_CONNECTION_FAILED"
+msgstr "USB 연결 실패"
+
+msgid "IDS_COM_HEADER_USB_ACCESSORY"
+msgstr "USB 액세서리"
+
+msgid "IDS_COM_POP_ALLOW_APPLICATION_P1SS_TO_ACCESS_USB_ACCESSORY_Q_ABB"
+msgstr "애플리케이션이 USB 액세서리에 접근할 수 있도록 허용할까요?"
+

@@ -1,0 +1,9 @@
+msgid "IDS_USB_POP_USB_CONNECTION_FAILED"
+msgstr "USB 连接失败"
+
+msgid "IDS_COM_HEADER_USB_ACCESSORY"
+msgstr "USB 附件"
+
+msgid "IDS_COM_POP_ALLOW_APPLICATION_P1SS_TO_ACCESS_USB_ACCESSORY_Q_ABB"
+msgstr "是否允许应用程序 访问 USB 附件？"
+

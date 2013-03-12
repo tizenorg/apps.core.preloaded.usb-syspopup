@@ -1,0 +1,9 @@
+#!/bin/sh
+#This is usb-syspopup postinst file
+
+
+vconftool set -t int db/setting/select_popup_btn "0" -u 5000
+
+
+sync
+

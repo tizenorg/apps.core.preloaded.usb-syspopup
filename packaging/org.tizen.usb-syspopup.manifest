@@ -1,0 +1,14 @@
+<manifest>
+	<define>
+		<domain name="usb-syspopup"/>
+		<provide>
+			<label name="usb-syspopup::usb-rx"/>
+		</provide>
+	</define>
+	<assign>
+		<filesystem path="/usr/bin/usb-syspopup" label="usb-syspopup::usb-rx" exec_label="usb-syspopup::usb-rx"/>
+	</assign>
+	<request>
+		<domain name="usb-syspopup"/>
+	</request>
+</manifest>
