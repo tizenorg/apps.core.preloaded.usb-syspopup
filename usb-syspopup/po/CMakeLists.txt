@@ -15,7 +15,7 @@ FOREACH(pofile ${POFILES})
 			DEPENDS ${absPofile}
 	)
 	INSTALL(FILES ${moFile}
-			DESTINATION share/locale/${lang}/LC_MESSAGES RENAME usb-syspopup.mo)
+			DESTINATION /usr/apps/org.tizen.usb-syspopup/res/locale/${lang}/LC_MESSAGES RENAME usb-syspopup.mo)
 	SET(moFiles ${moFiles} ${moFile})
 ENDFOREACH(pofile)
 

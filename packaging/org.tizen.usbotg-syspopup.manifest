@@ -1,0 +1,14 @@
+<manifest>
+	<define>
+		<domain name="usbotg-syspopup"/>
+		<provide>
+			<label name="usbotg-syspopup::usb-rx"/>
+		</provide>
+	</define>
+	<assign>
+		<filesystem path="/usr/apps/org.tizen.usbotg-syspopup/bin/usbotg-syspopup" label="usbotg-syspopup::usb-rx" exec_label="usbotg-syspopup::usb-rx"/>
+	</assign>
+	<request>
+		<domain name="usbotg-syspopup"/>
+	</request>
+</manifest>

@@ -37,24 +37,15 @@
 #define VCONFKEY_SYSMAN_USBHOST_STATUS "memory/sysman/usbhost_status"
 
 #if !defined(PACKAGE)
-#define PACKAGE "usb_syspopup"
+#define PACKAGE "usb-syspopup"
 #endif
 
 #include <dlog.h>
-#define USB_LOG_VERBOSE    LOG_VERBOSE
-#define USB_LOG_DEBUG      LOG_DEBUG
-#define USB_LOG_INFO       LOG_INFO
-#define USB_LOG_WARN       LOG_WARN
-#define USB_LOG_ERROR      LOG_ERROR
-#define USB_LOG_FATAL      LOG_FATAL
-
-#define USB_TAG "USB_SYSPOPUP"
-#define USB_LOG(log_level, format, args...)\
-	LOG(log_level, USB_TAG, "[%s][Ln: %d] " format,__FILE__, __LINE__, ##args)
-#define __USB_FUNC_ENTER__\
-	USB_LOG(USB_LOG_DEBUG, "Entering: %s()\n", __func__)
-#define __USB_FUNC_EXIT__\
-	USB_LOG(USB_LOG_DEBUG, "Exit: %s()\n", __func__)
+#undef LOG_TAG
+#define LOG_TAG "USB_SYSPOPUP"
+#define USB_LOG(fmt, args...)   SLOGD(fmt, ##args)
+#define __USB_FUNC_ENTER__      USB_LOG("ENTER")
+#define __USB_FUNC_EXIT__       USB_LOG("EXIT")
 
 typedef enum {
 	SYSPOPUP_TYPE = 0,
@@ -138,10 +129,6 @@ struct appdata {
 
 	/* add more variables here */
 };
-
-static void load_connection_failed_popup_ok_response_cb(void *data, Evas_Object * obj, void *event_info);
-static void request_perm_popup_yes_response_cb(void *data, Evas_Object * obj, void *event_info);
-static void request_perm_popup_no_response_cb(void *data, Evas_Object * obj, void *event_info);
 
 #endif			  /* __SYSPOPUP_APP_H__ */
 

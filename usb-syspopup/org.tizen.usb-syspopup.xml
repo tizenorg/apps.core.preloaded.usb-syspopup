@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <manifest xmlns="http://tizen.org/ns/packages" package="org.tizen.usb-syspopup" version="0.0.1" install-location="internal-only">
 	<label>Usb syspopup</label>
-	<author email="ty317.kim@samsung.com" href="www.samsung.com">Taeyoung Kim</author>
+	<author email="ty317.kim@samsung.com" href="www.tizen.org">Taeyoung Kim</author>
 	<description>USB System Popup Application</description>
-	<ui-application appid="org.tizen.usb-syspopup" exec="/usr/bin/usb-syspopup" nodisplay="true" multiple="false" type="capp" taskmanage="false">
+	<ui-application appid="org.tizen.usb-syspopup" exec="/usr/apps/org.tizen.usb-syspopup/bin/usb-syspopup" nodisplay="true" multiple="false" type="capp" taskmanage="false">
 		<label>Usb syspopup</label>
 		<label xml:lang="en-us">Usb system popup</label>
 		<label xml:lang="nl-nl">Usb-systeem pop-up</label>

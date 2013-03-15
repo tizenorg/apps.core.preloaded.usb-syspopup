@@ -19,7 +19,6 @@
 #include <appcore-efl.h>
 #include <Ecore_X.h>
 #include <devman.h>
-#include <heynoti.h>
 
 #include <time.h>
 #include "usb-syspopup.h"
@@ -40,17 +39,21 @@ syspopup_handler handler = {
 	.def_timeout_fn = NULL
 };
 
+static void load_connection_failed_popup_ok_response_cb(void *data, Evas_Object * obj, void *event_info);
+static void request_perm_popup_yes_response_cb(void *data, Evas_Object * obj, void *event_info);
+static void request_perm_popup_no_response_cb(void *data, Evas_Object * obj, void *event_info);
+
+
 int ipc_socket_client_init(int *sock_remote)
 {
 	__USB_FUNC_ENTER__ ;
 	if (!sock_remote) return -1;
-	int t, len;
+	int len;
 	struct sockaddr_un remote;
-	char str[SOCK_STR_LEN];
 
 	if (((*sock_remote) = socket(AF_UNIX, SOCK_STREAM, 0)) == -1) {
 		perror("socket");
-		USB_LOG(USB_LOG_VERBOSE, "FAIL: socket(AF_UNIX, SOCK_STREAM, 0)");
+		USB_LOG("FAIL: socket(AF_UNIX, SOCK_STREAM, 0)");
 		return -1;;
 	}
 	remote.sun_family = AF_UNIX;
@@ -59,7 +62,7 @@ int ipc_socket_client_init(int *sock_remote)
 
 	if (connect((*sock_remote), (struct sockaddr *)&remote, len) == -1) {
 		perror("connect");
-		USB_LOG(USB_LOG_VERBOSE, "FAIL: connect((*sock_remote), (struct sockaddr *)&remote, len)");
+		USB_LOG("FAIL: connect((*sock_remote), (struct sockaddr *)&remote, len)");
 		return -1;
 	}
 	__USB_FUNC_EXIT__ ;
@@ -116,7 +119,7 @@ static void usp_usbclient_chgdet_cb(keynode_t *in_key, void *data)
 
 	ret = vconf_get_int(VCONFKEY_SYSMAN_USB_STATUS, &usb_status);
 	if (ret == 0 && usb_status == VCONFKEY_SYSMAN_USB_DISCONNECTED) {
-		USB_LOG(USB_LOG_VERBOSE, "USB cable is not connected");
+		USB_LOG("USB cable is not connected");
 		elm_exit();
 	}
 	__USB_FUNC_EXIT__ ;
@@ -130,7 +133,7 @@ static void usp_usbhost_chgdet_cb(keynode_t *in_key, void *data)
 
 	ret = vconf_get_int(VCONFKEY_SYSMAN_USBHOST_STATUS, &usb_status);
 	if (ret == 0 && usb_status == VCONFKEY_SYSMAN_USB_HOST_DISCONNECTED) {
-		USB_LOG(USB_LOG_VERBOSE, "USB host is not connected");
+		USB_LOG("USB host is not connected");
 		elm_exit();
 	}
 	__USB_FUNC_EXIT__ ;
@@ -145,14 +148,14 @@ int usp_vconf_key_notify(struct appdata *ad)
 	/* Event for USB cable */
 	ret = vconf_notify_key_changed(VCONFKEY_SYSMAN_USB_STATUS, usp_usbclient_chgdet_cb, NULL);
 	if (0 != ret) {
-		USB_LOG(USB_LOG_VERBOSE, "FAIL: vconf_notify_key_changed(VCONFKEY_SYSMAN_USB_STATUS)");
+		USB_LOG("FAIL: vconf_notify_key_changed(VCONFKEY_SYSMAN_USB_STATUS)");
 		return -1;
 	}
 
 	/* Event for USB host */
 	ret = vconf_notify_key_changed(VCONFKEY_SYSMAN_USBHOST_STATUS, usp_usbhost_chgdet_cb, NULL);
 	if (0 != ret) {
-		USB_LOG(USB_LOG_VERBOSE, "FAIL: vconf_notify_key_changed(VCONFKEY_SYSMAN_USBHOST_STATUS)");
+		USB_LOG("FAIL: vconf_notify_key_changed(VCONFKEY_SYSMAN_USBHOST_STATUS)");
 		return -1;
 	}
 
@@ -168,14 +171,14 @@ int usp_vconf_key_ignore()
 	/* Event for USB cable */
 	ret = vconf_ignore_key_changed(VCONFKEY_SYSMAN_USB_STATUS, usp_usbclient_chgdet_cb);
 	if (0 != ret) {
-		USB_LOG(USB_LOG_VERBOSE, "FAIL: vconf_ignore_key_changed(VCONFKEY_SYSMAN_USB_STATUS)");
+		USB_LOG("FAIL: vconf_ignore_key_changed(VCONFKEY_SYSMAN_USB_STATUS)");
 		return -1;
 	}
 
 	/* Event for USB host */
 	ret = vconf_ignore_key_changed(VCONFKEY_SYSMAN_USBHOST_STATUS, usp_usbhost_chgdet_cb);
 	if (0 != ret) {
-		USB_LOG(USB_LOG_VERBOSE, "FAIL: vconf_ignore_key_changed(VCONFKEY_SYSMAN_USBHOST_STATUS)");
+		USB_LOG("FAIL: vconf_ignore_key_changed(VCONFKEY_SYSMAN_USBHOST_STATUS)");
 		return -1;
 	}
 
@@ -190,17 +193,15 @@ static int __app_create(void *data)
 	if(!data) return -1;
 	struct appdata *ad = data;
 	int ret = -1;
-	int usbclient_status = -1;
-	int usbhost_status = -1;
 
 	ret = usp_vconf_key_notify(ad);
-	if (ret != 0) USB_LOG(USB_LOG_VERBOSE, "FAIL: usp_vconf_key_notify(ad)");
+	if (ret != 0) USB_LOG("FAIL: usp_vconf_key_notify(ad)");
 
 	/* init internationalization */
 	ret = appcore_set_i18n(PACKAGE, LOCALEDIR);
 	if (ret != 0)
 	{
-		USB_LOG(USB_LOG_VERBOSE, "FAIL: appcore_set_i18n(PACKAGE, LOCALEDIR)\n");
+		USB_LOG("FAIL: appcore_set_i18n(PACKAGE, LOCALEDIR)\n");
 		return -1;
 	}
 
@@ -244,10 +245,8 @@ static int __app_terminate(void *data)
 	struct appdata *ad = data;
 	int ret = -1;
 
-	USB_LOG(USB_LOG_VERBOSE, "[SYSPOPUP] %s, %d\n", __func__, __LINE__);
-
 	ret = usp_vconf_key_ignore();
-	if (ret != 0) USB_LOG(USB_LOG_VERBOSE, "FAIL: usp_vconf_key_ignore()");
+	if (ret != 0) USB_LOG("FAIL: usp_vconf_key_ignore()");
 
 	unload_popup(ad);
 
@@ -256,7 +255,7 @@ static int __app_terminate(void *data)
 		ret = bundle_free(ad->b);
 		if (ret != 0 )
 		{
-			USB_LOG(USB_LOG_VERBOSE, "FAIL: bundle_free(ad->b)\n");
+			USB_LOG("FAIL: bundle_free(ad->b)\n");
 		}
 		ad->b = NULL;
 	}
@@ -287,7 +286,7 @@ int request_to_usb_server(int request, char *pkgName, char *answer)
 	int t, ret;
 	ret = ipc_socket_client_init(&sock_remote);
 	if (0 != ret) {
-		USB_LOG(USB_LOG_VERBOSE, "FAIL: ipc_socket_client_init(&sock_remote)");
+		USB_LOG("FAIL: ipc_socket_client_init(&sock_remote)");
 		return -1;
 	}
 	if(LAUNCH_APP_FOR_ACC == request || LAUNCH_APP_FOR_HOST == request) {
@@ -295,9 +294,9 @@ int request_to_usb_server(int request, char *pkgName, char *answer)
 	} else {
 		snprintf(str, SOCK_STR_LEN, "%d|", request);
 	}
-	USB_LOG(USB_LOG_VERBOSE, "request: %s", str);
+	USB_LOG("request: %s", str);
 	if (send (sock_remote, str, strlen(str)+1, 0) == -1) {
-		USB_LOG(USB_LOG_VERBOSE, "FAIL: send (sock_remote, str, strlen(str), 0)");
+		USB_LOG("FAIL: send (sock_remote, str, strlen(str), 0)");
 		ipc_socket_client_close(&sock_remote);
 		return -1;
 	}
@@ -307,9 +306,9 @@ int request_to_usb_server(int request, char *pkgName, char *answer)
 		} else { /* t == SOCK_STR_LEN */
 			answer[SOCK_STR_LEN-1] = '\0';
 		}
-		USB_LOG(USB_LOG_VERBOSE, "[CLIENT] Received value: %s", answer);
+		USB_LOG("[CLIENT] Received value: %s", answer);
 	} else {
-		USB_LOG(USB_LOG_VERBOSE, "FAIL: recv(sock_remote, str, SOCK_STR_LEN, 0)");
+		USB_LOG("FAIL: recv(sock_remote, str, SOCK_STR_LEN, 0)");
 		return -1;
 	}
 	ipc_socket_client_close(&sock_remote);
@@ -317,8 +316,7 @@ int request_to_usb_server(int request, char *pkgName, char *answer)
 	return 0;
 }
 
-static void load_connection_failed_popup_ok_response_cb(void *data, 
-								Evas_Object * obj, void *event_info)
+static void load_connection_failed_popup_ok_response_cb(void *data, Evas_Object * obj, void *event_info)
 {
 	__USB_FUNC_ENTER__;
 
@@ -330,7 +328,7 @@ static void load_connection_failed_popup_ok_response_cb(void *data,
 	char buf[SOCK_STR_LEN];
 	int ret = request_to_usb_server(ERROR_POPUP_OK_BTN, NULL, buf);
 	if (ret < 0) {
-		USB_LOG(USB_LOG_VERBOSE, "FAIL: request_to_usb_server(ERROR_POPUP_OK_BTN, NULL, buf)\n");
+		USB_LOG("FAIL: request_to_usb_server(ERROR_POPUP_OK_BTN, NULL, buf)\n");
 		return;
 	}
 
@@ -340,8 +338,7 @@ static void load_connection_failed_popup_ok_response_cb(void *data,
 
 }
 
-static void request_perm_popup_yes_response_cb(void *data,
-								Evas_Object * obj, void *event_info)
+static void request_perm_popup_yes_response_cb(void *data, Evas_Object * obj, void *event_info)
 {
 	__USB_FUNC_ENTER__;
 	if (!data) return ;
@@ -360,15 +357,14 @@ static void request_perm_popup_yes_response_cb(void *data,
 		ret = request_to_usb_server(-1, NULL, buf);
 
 	if (ret < 0) {
-		USB_LOG(USB_LOG_VERBOSE, "FAIL: request_to_usb_server(NOTICE_YES_BTN, NULL, buf)\n");
+		USB_LOG("FAIL: request_to_usb_server(NOTICE_YES_BTN, NULL, buf)\n");
 		return;
 	}
 	elm_exit();
 	__USB_FUNC_EXIT__ ;
 }
 
-static void request_perm_popup_no_response_cb(void *data,
-								Evas_Object * obj, void *event_info)
+static void request_perm_popup_no_response_cb(void *data, Evas_Object * obj, void *event_info)
 {
 	__USB_FUNC_ENTER__;
 	if (!data) return ;
@@ -387,7 +383,7 @@ static void request_perm_popup_no_response_cb(void *data,
 		ret = request_to_usb_server(-1, NULL, buf);
 
 	if (ret < 0) {
-		USB_LOG(USB_LOG_VERBOSE, "FAIL: request_to_usb_server(NOTICE_NO_BTN, NULL, buf)\n");
+		USB_LOG("FAIL: request_to_usb_server(NOTICE_NO_BTN, NULL, buf)\n");
 		return;
 	}
 	elm_exit();
@@ -412,7 +408,7 @@ static void load_connection_failed_popup(void *data)
 	if(ret == 0)
 	{
 		ad->content = dgettext(USB_SYSPOPUP_MESSAGE_DOMAIN, "IDS_USB_POP_USB_CONNECTION_FAILED");
-		USB_LOG(USB_LOG_VERBOSE, "ad->content is (%s)\n", ad->content);
+		USB_LOG("ad->content is (%s)\n", ad->content);
 
 		evas_object_show(ad->win);
 		ad->popup = elm_popup_add(ad->win);
@@ -423,14 +419,13 @@ static void load_connection_failed_popup(void *data)
 		ad->lbtn = elm_button_add(ad->popup);
 		elm_object_text_set(ad->lbtn, dgettext("sys_string","IDS_COM_SK_OK"));
 		elm_object_part_content_set(ad->popup, "button1", ad->lbtn);
-		evas_object_smart_callback_add(ad->lbtn, "clicked",
-						load_connection_failed_popup_ok_response_cb, ad);
+		evas_object_smart_callback_add(ad->lbtn, "clicked", load_connection_failed_popup_ok_response_cb, ad);
 
 		evas_object_show(ad->popup);
 	}
 	else
 	{
-		USB_LOG(USB_LOG_VERBOSE, "syspopup_create() returns an integer which is not 0\n");
+		USB_LOG("syspopup_create(b, &handler, ad->win, ad) returns an integer which is not 0\n");
 	}
 
 	__USB_FUNC_EXIT__ ;
@@ -452,7 +447,7 @@ static char *_gl_text_get(void *data, Evas_Object *obj, const char *part)
 {
 	__USB_FUNC_ENTER__ ;
 	int index = (int)data;
-	USB_LOG(USB_LOG_VERBOSE, "App name: %s\n", matchedApps[index]);
+	USB_LOG("App name: %s\n", matchedApps[index]);
 	__USB_FUNC_EXIT__ ;
 	return strdup(matchedApps[index]);
 }
@@ -477,10 +472,10 @@ static int send_sel_pkg_to_usb_server(struct appdata *ad)
 	else if (ad->type == SELECT_PKG_FOR_HOST_POPUP)
 		ret = request_to_usb_server(LAUNCH_APP_FOR_HOST, ad->selPkg, answer);
 	if (0 != ret) {
-		USB_LOG(USB_LOG_VERBOSE, "FAIL: request_to_usb_server(LAUNCH_APP, ad->selPkg, answer)");
+		USB_LOG("FAIL: request_to_usb_server(LAUNCH_APP, ad->selPkg, answer)");
 		return -1;
 	}
-	USB_LOG(USB_LOG_VERBOSE, "Launching app result is %s\n", answer);
+	USB_LOG("Launching app result is %s\n", answer);
 	__USB_FUNC_EXIT__ ;
 	return 0;
 }
@@ -495,12 +490,12 @@ static void select_app_popup_gl_select_cb(void *data, Evas_Object *obj, void *ev
 	Elm_Object_Item *item = (Elm_Object_Item *)event_info;
 	if (item) {
 		index = (int)elm_object_item_data_get(item);
-		USB_LOG(USB_LOG_VERBOSE, "Selected Item: %d: %s\n", index, matchedApps[index]);
+		USB_LOG("Selected Item: %d: %s\n", index, matchedApps[index]);
 		snprintf(ad->selPkg, PKG_NAME_LEN, "%s", matchedApps[index]);
 	}
 	unload_popup(ad);
 	int ret = send_sel_pkg_to_usb_server(ad);
-	if ( 0!= ret ) USB_LOG(USB_LOG_VERBOSE,"FAIL: send_sel_pkg_to_usb_server(ad)");
+	if ( 0!= ret ) USB_LOG("FAIL: send_sel_pkg_to_usb_server(ad)");
 	elm_exit();
 	
 	__USB_FUNC_EXIT__ ;
@@ -522,7 +517,7 @@ static void load_popup_to_select_app(struct appdata *ad, int numOfApps)
 	ad->win = win;
 
 	ret = syspopup_create(ad->b, &handler, ad->win, ad);
-	USB_LOG(USB_LOG_VERBOSE, "ret: %d\n", ret);
+	USB_LOG("ret: %d\n", ret);
 	if(ret == 0) {
 		evas_object_show(ad->win);
 		ad->popup = elm_popup_add(ad->win);
@@ -543,10 +538,10 @@ static void load_popup_to_select_app(struct appdata *ad, int numOfApps)
 		evas_object_size_hint_weight_set(genlist, EVAS_HINT_EXPAND,	EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		for (index = 0; index < numOfApps; index++) {
-			USB_LOG(USB_LOG_VERBOSE, "%d\n", numOfApps);
+			USB_LOG("%d\n", numOfApps);
 			item = elm_genlist_item_append(genlist, &itc, (void *) index, NULL,
 				ELM_GENLIST_ITEM_NONE, select_app_popup_gl_select_cb, ad);
-			if (NULL == item) USB_LOG(USB_LOG_VERBOSE, "NULL ==item\n");
+			if (NULL == item) USB_LOG("NULL ==item\n");
 		}
 		elm_object_content_set(ad->popup, genlist);
 		evas_object_show(ad->popup);
@@ -564,22 +559,22 @@ static int get_accessory_info(struct appdata *ad)
 {
 	__USB_FUNC_ENTER__ ;
 	if (!ad) return -1;
-	int ret, i;
+	int i;
 	char device[ACC_INFO_NUM][ACC_ELEMENT_LEN];
 	char key[SYSPOPUP_PARAM_LEN];
 	for (i = 0; i < ACC_INFO_NUM; i++) {
 		snprintf(key, SYSPOPUP_PARAM_LEN, "%d", 1 + i);
 		const char* type = bundle_get_val(ad->b, (const char *)key);
 		if (!type) {
-			USB_LOG(USB_LOG_VERBOSE, "ERROR: bundle_get_val(b)\n");
+			USB_LOG("ERROR: bundle_get_val(b)\n");
 			return -1;
 		} else {
-			USB_LOG(USB_LOG_VERBOSE, "%d: %s\n", i, type);
+			USB_LOG("%d: %s\n", i, type);
 			snprintf(device[i], ACC_ELEMENT_LEN, "%s", type);
 		}
 	}
 
-	USB_LOG(USB_LOG_VERBOSE, "Get USB Acc info\n");
+	USB_LOG("Get USB Acc info\n");
 	snprintf(ad->usbAcc->manufacturer, ACC_ELEMENT_LEN, "%s", device[ACC_MANUFACTURER]);
 	snprintf(ad->usbAcc->model, ACC_ELEMENT_LEN, "%s", device[ACC_MODEL]);
 	snprintf(ad->usbAcc->description, ACC_ELEMENT_LEN, "%s", device[ACC_DESCRIPTION]);
@@ -587,15 +582,15 @@ static int get_accessory_info(struct appdata *ad)
 	snprintf(ad->usbAcc->uri, ACC_ELEMENT_LEN, "%s", device[ACC_URI]);
 	snprintf(ad->usbAcc->serial, ACC_ELEMENT_LEN, "%s", device[ACC_SERIAL]);
 
-	USB_LOG(USB_LOG_VERBOSE, "Print USB acc info\n");
-	USB_LOG(USB_LOG_VERBOSE, "** USB ACCESSORY INFO **");
-	USB_LOG(USB_LOG_VERBOSE, "* Manufacturer: %s *", ad->usbAcc->manufacturer);
-	USB_LOG(USB_LOG_VERBOSE, "* Model       : %s *", ad->usbAcc->model);
-	USB_LOG(USB_LOG_VERBOSE, "* Description : %s *", ad->usbAcc->description);
-	USB_LOG(USB_LOG_VERBOSE, "* Version     : %s *", ad->usbAcc->version);
-	USB_LOG(USB_LOG_VERBOSE, "* URI         : %s *", ad->usbAcc->uri);
-	USB_LOG(USB_LOG_VERBOSE, "* SERIAL      : %s *", ad->usbAcc->serial);
-	USB_LOG(USB_LOG_VERBOSE, "************************");
+	USB_LOG("Print USB acc info\n");
+	USB_LOG("** USB ACCESSORY INFO **");
+	USB_LOG("* Manufacturer: %s *", ad->usbAcc->manufacturer);
+	USB_LOG("* Model       : %s *", ad->usbAcc->model);
+	USB_LOG("* Description : %s *", ad->usbAcc->description);
+	USB_LOG("* Version     : %s *", ad->usbAcc->version);
+	USB_LOG("* URI         : %s *", ad->usbAcc->uri);
+	USB_LOG("* SERIAL      : %s *", ad->usbAcc->serial);
+	USB_LOG("************************");
 	__USB_FUNC_EXIT__ ;
 	return 0;
 }
@@ -610,16 +605,16 @@ static void load_select_pkg_for_acc_popup(struct appdata *ad)
 	ad->usbAcc = &usbAcc;
 	ret = get_accessory_info(ad);
 	if (0 != ret) {
-		USB_LOG(USB_LOG_VERBOSE, "FAIL: get_accessory_info(ad)");
+		USB_LOG("FAIL: get_accessory_info(ad)");
 		elm_exit();
 	}
 
 	int numOfApps = get_accessory_matched(ad);
 	if (numOfApps > 0) {
-		USB_LOG(USB_LOG_VERBOSE, "number of apps matched: %d\n", numOfApps);
+		USB_LOG("number of apps matched: %d\n", numOfApps);
 		load_popup_to_select_app(ad, numOfApps);
 	} else {
-		USB_LOG(USB_LOG_VERBOSE, "number of apps matched is 0\n");
+		USB_LOG("number of apps matched is 0\n");
 		load_popup_to_confirm_uri(ad);
 	}
 	__USB_FUNC_EXIT__ ;
@@ -640,13 +635,12 @@ static void load_select_pkg_for_host_popup(struct appdata *ad)
 {
 	__USB_FUNC_ENTER__ ;
 	if (!ad) return;
-	int ret = -1;
 	int numOfApps = get_host_matched(ad);
 	if (numOfApps > 0) {
-		USB_LOG(USB_LOG_VERBOSE, "number of apps matched: %d\n", numOfApps);
+		USB_LOG("number of apps matched: %d\n", numOfApps);
 		load_popup_to_select_app(ad, numOfApps);
 	} else {
-		USB_LOG(USB_LOG_VERBOSE, "number of apps matched is 0\n");
+		USB_LOG("number of apps matched is 0\n");
 		load_popup_to_confirm_uri(ad);
 	}
 	__USB_FUNC_EXIT__ ;
@@ -678,7 +672,7 @@ void load_request_perm_popup(struct appdata *ad)
 		else {
 			ad->content = dgettext(USB_SYSPOPUP_MESSAGE_DOMAIN, "This app cannot access to the usb device");
 		}
-		USB_LOG(USB_LOG_VERBOSE, "ad->content is (%s)\n", ad->content);
+		USB_LOG("ad->content is (%s)\n", ad->content);
 
 		evas_object_show(ad->win);
 		ad->popup = elm_popup_add(ad->win);
@@ -709,7 +703,7 @@ void load_request_perm_popup(struct appdata *ad)
 	}
 	else
 	{
-		USB_LOG(USB_LOG_VERBOSE, "syspopup_create() returns an integer which is not 0\n");
+		USB_LOG("syspopup_create(b, &handler, ad->win, ad) returns an integer which is not 0\n");
 	}
 
 	__USB_FUNC_EXIT__ ;
@@ -722,13 +716,12 @@ static int __app_reset(bundle *b, void *data)
 	if(!data) return -1;
 	struct appdata *ad = data;
 	char key[SYSPOPUP_PARAM_LEN];
-	int ret = 0;
 
 	ad->b = bundle_dup(b);
 
 	/* When syspopup is already loaded, remove the popup and load new popup */
 	if (syspopup_has_popup(b)) {
-		USB_LOG(USB_LOG_VERBOSE, "syspopup_has_popup(b) returns 1\n");
+		USB_LOG("syspopup_has_popup(b) returns 1\n");
 		unload_popup(ad);
 		/* Resetting all proporties of syspopup */
 		syspopup_reset(b);
@@ -737,11 +730,11 @@ static int __app_reset(bundle *b, void *data)
 	snprintf(key, SYSPOPUP_PARAM_LEN, "%d", SYSPOPUP_TYPE);
 	const char* type = bundle_get_val(b, (const char *)key);
 	if (!type) {
-		USB_LOG(USB_LOG_VERBOSE, "ERROR: Non existing type of popup\n");
+		USB_LOG("ERROR: Non existing type of popup\n");
 		elm_exit();
 	} else {
 		ad->type = atoi(type);
-		USB_LOG(USB_LOG_VERBOSE, "ad->type is (%d)\n", ad->type);
+		USB_LOG("ad->type is (%d)\n", ad->type);
 	}
 
 	/* In case that USB cable/device is disconnected before launching popup,
@@ -759,7 +752,7 @@ static int __app_reset(bundle *b, void *data)
 		usp_usbhost_chgdet_cb(NULL, NULL);
 		break;
 	default:
-		USB_LOG(USB_LOG_VERBOSE, "ERROR: The popup type(%d) does not exist\n", ad->type);
+		USB_LOG("ERROR: The popup type(%d) does not exist\n", ad->type);
 		ad->isClientOrHost = USB_DEVICE_UNKNOWN;
 		elm_exit();
 		break;
@@ -767,24 +760,24 @@ static int __app_reset(bundle *b, void *data)
 
 	switch(ad->type) {
 	case ERROR_POPUP:
-		USB_LOG(USB_LOG_VERBOSE, "Connection failed popup is loaded\n");
+		USB_LOG("Connection failed popup is loaded\n");
 		load_connection_failed_popup(ad);
 		break;
 	case SELECT_PKG_FOR_ACC_POPUP:
-		USB_LOG(USB_LOG_VERBOSE, "Select pkg for acc popup is loaded\n");
+		USB_LOG("Select pkg for acc popup is loaded\n");
 		load_select_pkg_for_acc_popup(ad);
 		break;
 	case SELECT_PKG_FOR_HOST_POPUP:
-		USB_LOG(USB_LOG_VERBOSE, "Select pkg for host popup is loaded\n");
+		USB_LOG("Select pkg for host popup is loaded\n");
 		load_select_pkg_for_host_popup(ad);
 		break;
 	case REQ_ACC_PERM_POPUP:
 	case REQ_HOST_PERM_POPUP:
-		USB_LOG(USB_LOG_VERBOSE, "Request Permission popup is loaded\n");
+		USB_LOG("Request Permission popup is loaded\n");
 		load_request_perm_popup(ad);
 		break;
 	default:
-		USB_LOG(USB_LOG_VERBOSE, "ERROR: The popup type(%d) does not exist\n", ad->type);
+		USB_LOG("ERROR: The popup type(%d) does not exist\n", ad->type);
 		break;
 	}
 
