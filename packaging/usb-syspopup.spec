@@ -53,14 +53,14 @@ rm -rf %{buildroot}
 vconftool set -t int db/setting/select_popup_btn "0" -u 5000 -f
 
 %files
-%manifest org.tizen.usb-syspopup.manifest
+%manifest %{name}.manifest
 %defattr(440,root,root,-)
 %attr(540,app,app) /usr/apps/org.tizen.usb-syspopup/bin/usb-syspopup
 %attr(440,app,app) /usr/apps/org.tizen.usb-syspopup/res/locale/*/LC_MESSAGES/usb-syspopup.mo
 /usr/share/packages/org.tizen.usb-syspopup.xml
 
 %files -n org.tizen.usbotg-syspopup
-%manifest org.tizen.usbotg-syspopup.manifest
+%manifest %{name}.manifest
 %defattr(440,root,root,-)
 %attr(540,app,app) /usr/apps/org.tizen.usbotg-syspopup/bin/usbotg-syspopup
 /usr/share/packages/org.tizen.usbotg-syspopup.xml
