@@ -1,0 +1,8 @@
+Change-Id: I6f295abdc515fc09410244589b9d1db3493c8749
+Code-Review+2: Ryan Ware <ware@linux.intel.com>
+Verified+1: Ryan Ware <ware@linux.intel.com>
+Submitted-by: Ryan Ware <ware@linux.intel.com>
+Submitted-at: Mon, 08 Jul 2013 10:07:21 -0700
+Reviewed-on: https://review.tizen.org/gerrit/4480
+Project: apps/core/preloaded/usb-syspopup
+Branch: refs/heads/tizen
