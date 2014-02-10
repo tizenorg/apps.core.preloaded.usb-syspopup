@@ -1,7 +1,7 @@
 Name:       org.tizen.usb-syspopup
 Summary:    USB system popup
 Version:    0.0.10
-Release:    1
+Release:    0
 Group:      framework-system
 License:    APLv2
 Source0:    org.tizen.usb-syspopup-%{version}.tar.gz
@@ -15,6 +15,7 @@ BuildRequires:  pkgconfig(elementary)
 BuildRequires:  pkgconfig(appcore-efl)
 BuildRequires:  pkgconfig(bundle)
 BuildRequires:  pkgconfig(ecore)
+BuildRequires:  pkgconfig(ecore-x)
 BuildRequires:  pkgconfig(evas)
 BuildRequires:  pkgconfig(vconf)
 BuildRequires:  pkgconfig(devman)
