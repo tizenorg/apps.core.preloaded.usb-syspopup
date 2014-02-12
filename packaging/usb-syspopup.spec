@@ -32,6 +32,7 @@ BuildRequires:  pkgconfig(dlog)
 BuildRequires:  pkgconfig(appsvc)
 BuildRequires:  pkgconfig(pmapi)
 BuildRequires:  pkgconfig(syspopup)
+BuildRequires:  pkgconfig(libtzplatform-config)
 
 %description
 Description: USB system popup
@@ -70,18 +71,19 @@ rm -rf %{buildroot}
 
 
 %post
-vconftool set -t int db/setting/select_popup_btn "0" -u 5000 -f
+users_gid=$(getent group $TZ_SYS_USER_GROUP | cut -f3 -d':') 
+vconftool set -t int db/setting/select_popup_btn "0" -u $users_gid -f
 
 %files
 %manifest %{name}.manifest
 %defattr(440,root,root,-)
-%attr(540,app,app) %{_prefix}/apps/org.tizen.usb-syspopup/bin/usb-syspopup
-%attr(440,app,app) %{_prefix}/apps/org.tizen.usb-syspopup/res/locale/*/LC_MESSAGES/usb-syspopup.mo
-%{_datarootdir}/packages/org.tizen.usb-syspopup.xml
+%attr(550,root,%TZ_SYS_USER_GROUP) %TZ_SYS_RO_APP/org.tizen.usb-syspopup/bin/usb-syspopup
+%attr(440,root,%TZ_SYS_USER_GROUP) %TZ_SYS_RO_APP/org.tizen.usb-syspopup/res/locale/*/LC_MESSAGES/usb-syspopup.mo
+%TZ_SYS_RO_PACKAGES/org.tizen.usb-syspopup.xml
 
 %files -n org.tizen.usbotg-syspopup
 %manifest %{name}.manifest
 %defattr(440,root,root,-)
-%attr(540,app,app) %{_prefix}/apps/org.tizen.usbotg-syspopup/bin/usbotg-syspopup
-%{_datarootdir}/packages/org.tizen.usbotg-syspopup.xml
-%attr(440,app,app) %{_prefix}/apps/org.tizen.usbotg-syspopup/res/icons/usb_icon.png
+%attr(550,root,%TZ_SYS_USER_GROUP) %TZ_SYS_RO_APP/org.tizen.usbotg-syspopup/bin/usbotg-syspopup
+%TZ_SYS_RO_PACKAGES/org.tizen.usbotg-syspopup.xml
+%attr(440,root,%TZ_SYS_USER_GROUP) %TZ_SYS_RO_APP/org.tizen.usbotg-syspopup/res/icons/usb_icon.png
