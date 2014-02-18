@@ -20,7 +20,15 @@
 #include <pmapi.h>
 #include <assert.h>
 #include "usbotg-syspopup.h"
+
+#ifdef HAVE_X11
 #include <Ecore_X.h>
+#endif
+#ifdef HAVE_WAYLAND
+#include <Ecore.h>
+#include <Ecore_Wayland.h>
+#endif
+
 #include <appsvc.h>
 #include <syspopup.h>
 #include <vconf.h>
@@ -151,7 +159,23 @@ static Evas_Object *create_win(const char *name)
 		elm_win_borderless_set(eo, EINA_TRUE);
 		evas_object_smart_callback_add(eo, "delete,request", win_del, NULL);
 		elm_win_alpha_set(eo, EINA_TRUE);
-		ecore_x_window_size_get(ecore_x_window_root_first_get(), &w, &h);
+
+                #ifdef HAVE_X11
+	        Ecore_X_Window xwin;
+	        xwin = elm_win_xwindow_get(eo);
+	        if (xwin != 0)
+	           ecore_x_window_size_get(ecore_x_window_root_first_get(), &w, &h);
+	        else {
+	        #endif
+	        #ifdef HAVE_WAYLAND
+	        Ecore_Wl_Window *wlwin;
+	        wlwin = elm_win_wl_window_get(eo);
+	        if (wlwin != NULL)
+		  ecore_wl_screen_size_get(&w, &h);
+	        #endif
+	        #ifdef HAVE_X11
+	        }
+	        #endif
 		evas_object_resize(eo, w, h);
 	}
 
