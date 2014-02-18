@@ -1,3 +1,6 @@
+%bcond_with wayland
+%bcond_with x
+
 Name:       org.tizen.usb-syspopup
 Summary:    USB system popup
 Version:    0.0.10
@@ -15,6 +18,13 @@ BuildRequires:  pkgconfig(elementary)
 BuildRequires:  pkgconfig(appcore-efl)
 BuildRequires:  pkgconfig(bundle)
 BuildRequires:  pkgconfig(ecore)
+BuildRequires:  pkgconfig(ecore-evas)
+%if %{with x}
+BuildRequires:  pkgconfig(ecore-x)
+%endif
+%if %{with wayland}
+BuildRequires:  pkgconfig(ecore-wayland)
+%endif
 BuildRequires:  pkgconfig(evas)
 BuildRequires:  pkgconfig(vconf)
 BuildRequires:  pkgconfig(devman)
@@ -36,12 +46,22 @@ system-popup application (usb otg popup).
 
 %prep
 %setup -q
-cmake . -DCMAKE_INSTALL_PREFIX=%{_prefix}
 
 %build
 cp %{SOURCE1} .
 cp %{SOURCE2} .
 
+%cmake . -DCMAKE_INSTALL_PREFIX=%{_prefix} \
+%if %{with wayland}
+         -DWAYLAND_SUPPORT=On \
+%else
+         -DWAYLAND_SUPPORT=Off \
+%endif
+%if %{with x}
+         -DX11_SUPPORT=On
+%else
+         -DX11_SUPPORT=Off
+%endif
 make %{?jobs:-j%jobs}
 
 %install
@@ -49,19 +69,19 @@ rm -rf %{buildroot}
 %make_install
 
 
-%post 
+%post
 vconftool set -t int db/setting/select_popup_btn "0" -u 5000 -f
 
 %files
 %manifest %{name}.manifest
 %defattr(440,root,root,-)
-%attr(540,app,app) /usr/apps/org.tizen.usb-syspopup/bin/usb-syspopup
-%attr(440,app,app) /usr/apps/org.tizen.usb-syspopup/res/locale/*/LC_MESSAGES/usb-syspopup.mo
-/usr/share/packages/org.tizen.usb-syspopup.xml
+%attr(540,app,app) %{_prefix}/apps/org.tizen.usb-syspopup/bin/usb-syspopup
+%attr(440,app,app) %{_prefix}/apps/org.tizen.usb-syspopup/res/locale/*/LC_MESSAGES/usb-syspopup.mo
+%{_datarootdir}/packages/org.tizen.usb-syspopup.xml
 
 %files -n org.tizen.usbotg-syspopup
 %manifest %{name}.manifest
 %defattr(440,root,root,-)
-%attr(540,app,app) /usr/apps/org.tizen.usbotg-syspopup/bin/usbotg-syspopup
-/usr/share/packages/org.tizen.usbotg-syspopup.xml
-%attr(440,app,app) /usr/apps/org.tizen.usbotg-syspopup/res/icons/usb_icon.png
+%attr(540,app,app) %{_prefix}/apps/org.tizen.usbotg-syspopup/bin/usbotg-syspopup
+%{_datarootdir}/packages/org.tizen.usbotg-syspopup.xml
+%attr(440,app,app) %{_prefix}/apps/org.tizen.usbotg-syspopup/res/icons/usb_icon.png

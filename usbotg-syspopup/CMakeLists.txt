@@ -11,6 +11,7 @@ SET(RESDIR "${PREFIX}/res")
 SET(LOCALEDIR "${RESDIR}/locale")
 SET(MANIFESTDIR "${CMAKE_INSTALL_PREFIX}/share/packages")
 
+IF(X11_SUPPORT)
 INCLUDE(FindPkgConfig)
 pkg_check_modules(pkgs REQUIRED
 			appcore-efl
@@ -22,6 +23,21 @@ pkg_check_modules(pkgs REQUIRED
 			vconf
 			appsvc
 			dlog)
+ELSE(WAYLAND_SUPPORT)
+INCLUDE(FindPkgConfig)
+pkg_check_modules(pkgs REQUIRED
+			appcore-efl
+			elementary
+			devman
+			syspopup
+			syspopup-caller
+			ecore-evas
+			ecore-wayland
+			vconf
+			appsvc
+			dlog)
+ENDIF(X11_SUPPORT)
+
 
 FOREACH(flag ${pkgs_CFLAGS})
 	SET(EXTRA_CFLAGS "${EXTRA_CFLAGS} ${flag}")
@@ -31,6 +47,11 @@ SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${EXTRA_CFLAGS} -O2 -g -Wall")
 
 ADD_DEFINITIONS("-DLOCALEDIR=\"${LOCALEDIR}\"")
 ADD_DEFINITIONS("-DPACKAGE=\"${PACKAGE}\"")
+
+IF(WAYLAND_SUPPORT)
+    ADD_DEFINITIONS("-DHAVE_WAYLAND")
+    ADD_DEFINITIONS("-DWAYLAND")
+ENDIF(WAYLAND_SUPPORT)
 
 SET(CMAKE_EXE_LINKER_FLAGS "-Wl,--as-needed")
 

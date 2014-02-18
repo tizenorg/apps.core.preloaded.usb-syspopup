@@ -17,7 +17,15 @@
 
 #include <stdio.h>
 #include <appcore-efl.h>
+
+#ifdef X11
 #include <Ecore_X.h>
+#endif
+#ifdef HAVE_WAYLAND
+#include <Ecore.h>
+#include <Ecore_Wayland.h>
+#endif
+
 #include <devman.h>
 
 #include <time.h>
@@ -101,8 +109,23 @@ static Evas_Object *__create_win(const char *name)
 		elm_win_raise(eo);
 		evas_object_smart_callback_add(eo, "delete,request",
 						   __win_del, NULL);
-		ecore_x_window_size_get(ecore_x_window_root_first_get(),
-					&w, &h);
+                #ifdef X11
+	        Ecore_X_Window *xwin;
+	        xwin = elm_win_xwindow_get(eo);
+	        if (xwin != NULL)
+	           ecore_x_window_size_get(ecore_x_window_root_first_get(), &w, &h);
+	        else {
+	        #endif
+	        #ifdef HAVE_WAYLAND
+	        Ecore_Wl_Window *wlwin;
+	        wlwin = elm_win_wl_window_get(eo);
+	        if (wlwin != NULL)
+		  ecore_wl_screen_size_get(&w, &h);
+	        #endif
+	        #ifdef X11
+	        }
+	        #endif
+
 		evas_object_resize(eo, w, h);
 	}
 
@@ -459,7 +482,7 @@ static void select_app_popup_cancel_response_cb(void *data, Evas_Object * obj, v
 	struct appdata *ad = (struct appdata *)data;
 	unload_popup(ad);
 	elm_exit();
-	__USB_FUNC_EXIT__ ; 
+	__USB_FUNC_EXIT__ ;
 }
 
 static int send_sel_pkg_to_usb_server(struct appdata *ad)
@@ -497,7 +520,7 @@ static void select_app_popup_gl_select_cb(void *data, Evas_Object *obj, void *ev
 	int ret = send_sel_pkg_to_usb_server(ad);
 	if ( 0!= ret ) USB_LOG("FAIL: send_sel_pkg_to_usb_server(ad)");
 	elm_exit();
-	
+
 	__USB_FUNC_EXIT__ ;
 }
 
@@ -528,7 +551,7 @@ static void load_popup_to_select_app(struct appdata *ad, int numOfApps)
 		elm_object_text_set(ad->lbtn, "Cancel");
 		elm_object_part_content_set(ad->popup, "button1", ad->lbtn);
 		evas_object_smart_callback_add(ad->lbtn, "clicked", select_app_popup_cancel_response_cb, ad);
-	
+
 		itc.item_style = "1text";
 		itc.func.text_get = _gl_text_get;
 		itc.func.content_get = NULL;
@@ -546,7 +569,7 @@ static void load_popup_to_select_app(struct appdata *ad, int numOfApps)
 		elm_object_content_set(ad->popup, genlist);
 		evas_object_show(ad->popup);
 	}
-	__USB_FUNC_EXIT__ ; 
+	__USB_FUNC_EXIT__ ;
 }
 
 static void load_popup_to_confirm_uri(struct appdata *ad)
